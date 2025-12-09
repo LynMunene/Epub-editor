@@ -1,100 +1,70 @@
-# EPUB Professional Editor
+# 📚 EPUB Professional Editor
 
-[![GitHub release](https://img.shields.io/github/v/release/BR1JM0H4N/Epub-editor?style=flat-square)](https://github.com/BR1JM0H4N/Epub-editor/releases)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/BR1JM0H4N/Epub-editor/pages.yml?branch=main&style=flat-square&label=Pages%20Deploy)](https://github.com/BR1JM0H4N/Epub-editor/actions)
-[![GitHub issues](https://img.shields.io/github/issues/BR1JM0H4N/Epub-editor?style=flat-square)](https://github.com/BR1JM0H4N/Epub-editor/issues)
-[![License: MIT](https://img.shields.io/github/license/BR1JM0H4N/Epub-editor?style=flat-square)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/BR1JM0H4N/Epub-editor?style=flat-square)](https://github.com/BR1JM0H4N/Epub-editor/stargazers)
+[![GitHub license](https://img.shields.io/github/license/BR1JM0H4N/Epub-editor?style=for-the-badge)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/BR1JM0H4N/Epub-editor?style=for-the-badge&color=yellow)](https://github.com/BR1JM0H4N/Epub-editor/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/BR1JM0H4N/Epub-editor?style=for-the-badge&color=green)](https://github.com/BR1JM0H4N/Epub-editor/network/members)
+[![Demo Live](https://img.shields.io/badge/Demo-Live-brightgreen?style=for-the-badge&logo=vercel)](https://br1jm0h4n.github.io/Epub-editor/)
 
----
+A powerful, client-side, single-page application (SPA) for professionally editing EPUB files, built entirely with **HTML, CSS (Android 15 Dark Theme), and Vanilla JavaScript**.
 
-**Online Demo:**  
-👉 [https://br1jm0h4n.github.io/Epub-editor/](https://br1jm0h4n.github.io/Epub-editor/)
+The editor allows users to load an EPUB file, perform common fixes and edits, and download the modified file—all without server-side processing.
 
----
+## ✨ Features
 
-## ✨ EPUB Professional Editor
+This editor is designed to streamline the EPUB preparation process with a focus on fixing common metadata and structural issues.
 
-A modern, privacy-first in-browser EPUB editor to modify eBooks — all processing is done client-side in your browser! 
+| Feature | Description |
+| :--- | :--- |
+| **Metadata Editing** | Modify core EPUB metadata like **Title**, **Author**, **Language**, and **Publisher**. |
+| **Cover Replacement** | Easily replace the cover image, with automatic updates to the OPF manifest (`item` and `<meta name="cover">`). |
+| **Cover Structure Fix** | Option to **Ensure cover is the first item in spine order** to correct reading flow. |
+| **Front Page Generator** | **Add Front Page** feature to automatically create a simple XHTML wrapper for the cover image and insert it as the first spine item if a proper cover wrapper is missing. |
+| **Table of Contents (TOC)** | **Generate/Replace TOC (NCX)** by scanning chapter files using a customizable **CSS Selector** (e.g., `h1, h2, .chapter-title`). |
+| **Bulk Find & Replace** | Apply multiple, non-global, or **RegEx** based text replacement rules across *all* chapter (XHTML/HTML) files in the EPUB package. |
+| **Client-Side Only** | All processing is done locally in the browser for **speed and privacy**. |
+| **Modern UI** | Utilizes an **Android 15 Dark Theme** inspired design for a clean and focused experience. |
 
-Edit metadata, fix or replace covers, auto-generate tables of contents, and perform bulk find-and-replace operations across your EPUB files without uploading them to any server.
+## 🛠️ Technology Stack
 
----
+* **Frontend:** HTML5, CSS3 (Vanilla), JavaScript (Vanilla)
+* **Key Library:** **[JSZip](https://stuk.github.io/jszip/)** for reading, modifying, and writing `.zip` files (EPUB format).
+* **Development Tools:** **[Eruda](https://github.com/liriliri/eruda)** is included for mobile debugging convenience during development.
+* **Styling:** Custom CSS implementing a modern, dark-themed UI.
 
-## Features
+## 🚀 Getting Started
 
-- **Android 15 dark theme**: Stylish, accessible UI.
-- **Edit Metadata**: Change title, author, language, and publisher.
-- **Cover Image Handling**:
-  - Replace existing covers (auto-updates manifest and metadata).
-  - Optionally generate or fix a proper cover page/front wrapper.
-  - Ensure the cover is the first spine item for optimal reader display.
-- **EPUB Table of Contents**:
-  - Auto-generate or update NCX TOC from customizable CSS selectors (`h1`, `h2`, `.chapter-title` etc.).
-  - Preview TOC structure before saving.
-- **Bulk Find & Replace**:
-  - Define multiple text/regex replacement rules.
-  - Test transformations live with input/output preview.
-  - Apply to all XHTML/HTML chapters at once.
-- **Instant Download**: Click once to generate and download the modified EPUB.
-- **Zero server-side code**: Privacy preserved—your book never leaves your device.
-- **Mobile Friendly**: Usable on tablets and large-screen mobile browsers.
+Since this is a client-side application, you can use it immediately by visiting the demo link or by cloning the repository and opening the `index.html` file in your web browser.
 
----
+### Using the Live Demo
 
-## Usage
+1.  Navigate to the **[EPUB Professional Editor Demo](https://br1jm0h4n.github.io/Epub-editor/)**.
+2.  Click **"Choose File"** and select your `.epub` file.
+3.  The metadata fields will populate automatically.
+4.  Make your desired edits in the Metadata, Cover, or TOC sections.
+5.  Use the **"Open Find & Replace Tool"** to set up bulk text replacement rules.
+6.  Click **"Generate & Download EPUB"** to save your modified file.
 
-1. **Open the editor:**  
-   [https://br1jm0h4n.github.io/Epub-editor/](https://br1jm0h4n.github.io/Epub-editor/)
-2. **Upload your EPUB** using the file picker.
-3. Edit the **metadata** and/or **cover** as needed.
-4. Optionally, use **Bulk Find & Replace** to clean up common OCR artifacts or text patterns.
-5. Optionally, regenerate the **Table of Contents** using your own selectors.
-6. Click **Generate & Download EPUB** to get the edited book.
+### Local Setup
 
-_All changes are processed instantly in-browser. The original file is never uploaded._
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/BR1JM0H4N/Epub-editor.git](https://github.com/BR1JM0H4N/Epub-editor.git)
+    cd Epub-editor
+    ```
+2.  **Open `index.html`** in your browser.
 
----
+> **Note:** The application uses standard browser APIs and does not require any build tools or local servers.
 
-## Screenshots
+## 🤝 Contribution
 
-![Editor main UI](https://user-images.githubusercontent.com/BR1JM0H4N/Epub-editor/main/screenshot1.png)
-![Find and Replace modal](https://user-images.githubusercontent.com/BR1JM0H4N/Epub-editor/main/screenshot2.png)
+Contributions are welcome! If you have suggestions for new features, bug fixes, or improvements to the styling or core logic, please feel free to open an issue or submit a pull request.
 
----
+1.  Fork the Project.
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your Changes (`git commit -m 'feat: Add amazing feature'`).
+4.  Push to the Branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
 
-## Development
+## 📄 License
 
-- Built with standard HTML, CSS (custom properties), and vanilla JavaScript.
-- [JSZip](https://stuk.github.io/jszip/) is used for EPUB (ZIP) processing.
-- Debug console powered by [eruda](https://github.com/liriliri/eruda) (visible on mobile).
-
-### Run locally
-
-Clone the repo and simply open `index.html` in your browser. No build tools required.
-
-```sh
-git clone https://github.com/BR1JM0H4N/Epub-editor.git
-cd Epub-editor
-open index.html   # or drag into browser
-```
-
----
-
-## License
-
-MIT &copy; [BR1JM0H4N](https://github.com/BR1JM0H4N)
-
----
-
-## Credits
-
-- [JSZip](https://github.com/Stuk/jszip)
-- [eruda](https://github.com/liriliri/eruda)
-- Book and EPUB specification insights from [idpf.org](https://www.w3.org/publishing/epub3/epub-changes.html)
-
----
-
-## Feedback & Issues
-
-If you hit problems or have requests, file an [issue](https://github.com/BR1JM0H4N/Epub-editor/issues) or open a [discussion](https://github.com/BR1JM0H4N/Epub-editor/discussions).
+Distributed under the **MIT License**. See `LICENSE` for more information.
