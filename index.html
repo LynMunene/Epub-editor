@@ -248,7 +248,7 @@
 <body>
 
   <div class="container">
-    <h1>📚 EPUB Professional Editor v1.35 </h1>
+    <h1>📚 EPUB Professional Editor v1.4-beta </h1>
     <p>
       Load an EPUB to edit metadata, fix covers, generate TOCs, or bulk find-and-replace text.
     </p>
@@ -296,10 +296,14 @@
         </div>
 
         <!-- New UI: Add Front Page Button -->
-        <div class="metadata-field">
-          <button id="addFrontPageBtn" class="btn btn-secondary">Add Front Page (Use current cover)</button>
-          <small>If the book has no cover wrapper/front-page, this creates a simple front page XHTML that displays the current cover image and inserts it at the start of the spine.</small>
-        </div>
+      <!-- Optional Front Page Checkbox -->
+<div class="metadata-field">
+  <label>
+    <input type="checkbox" id="addFrontPageCheckbox" checked>
+    Add Front Page (Use current cover)
+  </label>
+  <small>If the book has no cover wrapper/front-page, this creates a simple front page XHTML that displays the current cover image and inserts it at the start of the spine.</small>
+</div>
       </div>
 
       <div id="toc-editor">
@@ -1052,36 +1056,7 @@ async function ensureFrontCoverPage(opfDoc, zip) {
     document.getElementById('tocPreviewOutput').style.display = 'block';
     });
 
-    // Handler for Add Front Page (UI button)
-    addFrontPageBtn.addEventListener('click', async () => {
-      if (!currentZip) {
-        log("No EPUB loaded.", "error");
-        return;
-      }
-      try {
-        // Re-load OPF
-        const opfStr = await currentZip.file(opfRootPath).async("text");
-        const opfDoc = parser.parseFromString(opfStr, "application/xml");
-
-        // If user staged a new cover file, process it first to ensure manifest points to it
-        if (newCoverFile) {
-          await processCover(opfDoc, currentZip);
-        }
-
-        const created = await ensureFrontCoverPage(opfDoc, currentZip);
-        if (created) {
-          // Save updated OPF into zip
-          currentZip.file(opfRootPath, serializer.serializeToString(opfDoc));
-          log("Front page created and OPF updated. It will be included in the next generation/download.", "success");
-        } else {
-          log("No front page created (one may already exist).", "info");
-        }
-      } catch (err) {
-        console.error(err);
-        log("Error while adding front page: " + err.message, "error");
-      }
-    });
-
+    
     // Main Process Handler
     processBtn.addEventListener('click', async () => {
     if (!currentZip) return;
@@ -1113,7 +1088,9 @@ async function ensureFrontCoverPage(opfDoc, zip) {
     await processCover(opfDoc, currentZip);
 
     // 2b. Ensure front cover page exists (if user wants the cover as front page)
+    if (addFrontPageCheckbox.checked) {
     await ensureFrontCoverPage(opfDoc, currentZip);
+  }
 
     await processSpineOrder(opfDoc);
 
