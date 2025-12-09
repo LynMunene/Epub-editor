@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EPUB Professional Editor</title>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>
+    eruda.init();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    /* 1. Global Android 15 Dark Theme & Typography */
+:root {
+    --color-background: #090b0d;
+    --color-surface: #14171a;
+    --color-surface-variant: #1f2327;
+    --color-text-primary: #e8e6e3;
+    --color-text-secondary: #a0a4a8;
+    --color-accent: #89e2ff;
+    --color-error: #f2b8b5;
+    --color-success: #a3ffac;
+    --color-border: #33393e;
+    --border-radius-lg: 16px;
+    --border-radius-sm: 8px;
+    --font-family: 'Roboto', 'Noto Sans', sans-serif;
+    }
+
+    body {
+    font-family: var(--font-family);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+    line-height: 1.5;
+    }
+
+    .container {
+    background-color: var(--color-surface);
+    padding: 24px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-border);
+    }
+
+    h1, h2, h3 {
+    color: var(--color-text-primary);
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: 16px;
+    }
+
+    h1 { font-size: 1.75rem;
+    }
+    h2 { font-size: 1.35rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 8px;
+    }
+    h3 { font-size: 1.15rem;
+    }
+
+    /* 2. Form Inputs */
+    .metadata-field { margin-bottom: 20px;
+    }
+
+    .metadata-field label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-surface-variant);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    }
+
+    small {
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 6px;
+    }
+
+    /* 3. Buttons */
+    .btn {
+    background-color: #2e3338;
+    color: var(--color-text-primary);
+    border: none;
+    padding: 14px 20px;
+    cursor: pointer;
+    border-radius: var(--border-radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+    }
+
+    .btn:hover:not(:disabled) { background-color: #3e444a;
+    }
+
+    .btn-primary {
+    background-color: var(--color-accent);
+    color: var(--color-surface);
+    }
+    .btn-primary:hover:not(:disabled) { background-color: #b0f4ff;
+    }
+
+    .btn-secondary { background-color: #4a6c8e;
+    color: white;
+    }
+    .btn-secondary:hover:not(:disabled) { background-color: #5c84b1;
+    }
+
+    .btn-danger { background-color: #8c4a4a;
+    color: white;
+    }
+    .btn-danger:hover { background-color: #a65858;
+    }
+
+    .btn:disabled { opacity: 0.6;
+    cursor: not-allowed;
+    }
+
+    .btn-group { display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    }
+
+    /* 4. Sections */
+    #metadata-editor, #cover-editor, #toc-editor, #find-replace-section {
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 24px;
+    }
+
+    /* 5. Logs & Preview */
+    #log {
+    margin-top: 24px;
+    white-space: pre-wrap;
+    background-color: #0b0e11;
+    padding: 16px;
+    border-radius: var(--border-radius-sm);
+    max-height: 250px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 0.85rem;
+    border: 1px solid var(--color-surface-variant);
+    }
+    .success { color: var(--color-success);
+    }
+    .error { color: var(--color-error);
+    }
+    .highlight { color: var(--color-accent);
+    }
+
+    /* 6. Modal Styles (Find & Replace) */
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 96.75%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+    background-color: var(--color-surface);
+    margin: 5% auto;
+    padding: 24px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    width: 90%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .rule-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+    background: var(--color-surface-variant);
+    padding: 10px;
+    border-radius: var(--border-radius-sm);
+    }
+
+    .rule-inputs { flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    }
+    .rule-options { display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.8rem;
+    }
+
+    .remove-rule-btn {
+    background: var(--color-error);
+    color: #3f0000;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+    .preview-box {
+    margin-top: 15px;
+    padding: 10px;
+    background: #0b0e11;
+    border: 1px dashed var(--color-border);
+    color: var(--color-text-secondary);
+    font-family: monospace;
+    white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>📚 EPUB Professional Editor</h1>
+    <p>
+      Load an EPUB to edit metadata, fix covers, generate TOCs, or bulk find-and-replace text.
+    </p>
+
+    <input type="file" id="fileInput" accept=".epub">
+
+    <div id="editor-area" style="display:none; margin-top: 20px;">
+
+      <div id="metadata-editor">
+        <h2>✏️ Edit Metadata</h2>
+        <div class="metadata-field">
+          <label>Title</label>
+          <input type="text" id="metaTitle">
+        </div>
+        <div class="metadata-field">
+          <label>Author</label>
+          <input type="text" id="metaAuthor">
+        </div>
+        <div class="metadata-field">
+          <div style="display: flex; gap: 10px;">
+            <div style="flex:1;">
+              <label>Language</label>
+              <input type="text" id="metaLanguage">
+            </div>
+            <div style="flex:1;">
+              <label>Publisher</label>
+              <input type="text" id="metaPublisher">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cover-editor">
+        <h2>🖼️ Cover Image</h2>
+        <div class="metadata-field">
+          <label>Replace Cover (JPG/PNG)</label>
+          <input type="file" id="coverInput" accept="image/jpeg, image/png">
+          <small>Checking this automatically updates the OPF manifest and the 'cover' metadata tag.</small>
+        </div>
+        <div class="metadata-field">
+          <label>
+            <input type="checkbox" id="coverFirstPage" checked>
+            Ensure cover is the first item in spine order
+          </label>
+        </div>
+      </div>
+
+      <div id="toc-editor">
+        <h2>🗂️ Table of Contents</h2>
+        <div class="metadata-field">
+          <label>
+            <input type="checkbox" id="generateTOC" checked>
+            Generate/Replace Table of Contents (NCX)
+          </label>
+        </div>
+        <div class="metadata-field" id="tocSelectorField">
+          <label>TOC CSS Selector</label>
+          <input type="text" id="tocSelector" value="h1, h2, .chapter-title">
+          <small>Comma-separated selectors (e.g. h1, h2) to identify chapters.</small>
+        </div>
+        <button id="previewTocBtn" class="btn btn-secondary">Preview TOC Structure</button>
+        <div id="tocPreviewOutput" style="display:none; margin-top:10px; padding:10px; background:#1f2327; word-wrap: break-word;overflow-wrap: break-word;">
+          <ul id="previewList" style="padding-left:20px; margin:0;"></ul>
+        </div>
+      </div>
+
+      <div id="find-replace-section">
+        <h2>🔎 Bulk Find & Replace</h2>
+        <p style="color: var(--color-text-secondary); font-size: 0.9rem;">
+          Define text replacement rules to apply across all chapters (HTML/XHTML files).
+        </p>
+        <button id="openFrModalBtn" class="btn btn-secondary">Open Find & Replace Tool</button>
+      </div>
+
+      <div class="btn-group">
+        <button id="processBtn" class="btn btn-primary">Generate & Download EPUB</button>
+      </div>
+
+    </div>
+    <div id="log">
+      Waiting for file...
+    </div>
+  </div>
+
+  <div id="frModal" class="modal">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--color-border); padding-bottom:10px; margin-bottom:15px;">
+        <h2 style="margin:0; border:none;">Find & Replace Rules</h2>
+        <button id="closeFrModal" style="background:none; border:none; color:var(--color-text-secondary); font-size:1.5rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <div id="rulesContainer">
+      </div>
+
+      <button id="addRuleBtn" class="btn" style="background-color: var(--color-surface-variant); border: 1px dashed var(--color-text-secondary);">+ Add Another Rule</button>
+
+      <div style="margin-top: 20px; border-top: 1px solid var(--color-border); padding-top: 15px;">
+        <h3>🧪 Test Rules</h3>
+        <label style="font-size:0.85rem; color:var(--color-text-secondary);">Sample Text:</label>
+        <textarea id="frSampleInput" rows="3" placeholder="Paste a snippet of text here to test..."></textarea>
+
+        <button id="testRulesBtn" class="btn btn-secondary" style="margin-bottom: 10px;">Preview Result</button>
+
+        <label style="font-size:0.85rem; color:var(--color-text-secondary);">Result:</label>
+        <div id="frSampleOutput" class="preview-box">
+          Result will appear here...
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button id="saveRulesBtn" class="btn btn-primary">Save Rules & Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Global Variables ---
+    let currentFile = null;
+    let currentZip = null;
+    let opfRootPath = '';
+    let opfContentDir = ''; // e.g., "OEBPS/"
+    let newCoverFile = null;
+    let frRules = []; // Array of { find, replace, useRegex }
+
+    // XML Namespaces
+    const DC_NS = "http://purl.org/dc/elements/1.1/";
+    const OPF_NS = "http://www.idpf.org/2007/opf";
+    const parser = new DOMParser();
+    const serializer = new XMLSerializer();
+
+    // DOM Elements
+    const fileInput = document.getElementById('fileInput');
+    const editorArea = document.getElementById('editor-area');
+    const logDiv = document.getElementById('log');
+
+    // Editor Inputs
+    const metaTitle = document.getElementById('metaTitle');
+    const metaAuthor = document.getElementById('metaAuthor');
+    const metaLang = document.getElementById('metaLanguage');
+    const metaPub = document.getElementById('metaPublisher');
+    const coverInput = document.getElementById('coverInput');
+    const generateTOCCheckbox = document.getElementById('generateTOC');
+    const tocSelectorInput = document.getElementById('tocSelector');
+
+    // Buttons
+    const processBtn = document.getElementById('processBtn');
+    const previewTocBtn = document.getElementById('previewTocBtn');
+
+    // Find/Replace Modal Elements
+    const frModal = document.getElementById('frModal');
+    const openFrModalBtn = document.getElementById('openFrModalBtn');
+    const closeFrModalBtn = document.getElementById('closeFrModal');
+    const rulesContainer = document.getElementById('rulesContainer');
+    const addRuleBtn = document.getElementById('addRuleBtn');
+    const testRulesBtn = document.getElementById('testRulesBtn');
+    const saveRulesBtn = document.getElementById('saveRulesBtn');
+
+    // --- Utility: Logger ---
+    function log(msg, type = 'info') {
+    const line = document.createElement('div');
+    // Timestamp
+    const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    line.innerHTML = `<span style="opacity:0.5">[${time}]</span> ${msg}`;
+
+    if (type === 'error') line.className = 'error';
+    if (type === 'success') line.className = 'success';
+    if (type === 'highlight') line.className = 'highlight';
+
+    logDiv.appendChild(line);
+    logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    // --- Step 1: File Loading ---
+    fileInput.addEventListener('change', async (e) => {
+    if (e.target.files.length === 0) return;
+
+    currentFile = e.target.files[0];
+    log(`Selected file: ${currentFile.name}`, 'highlight');
+
+    try {
+    currentZip = new JSZip();
+    const content = await currentZip.loadAsync(currentFile);
+
+    // 1. Locate OPF
+    const containerXml = await content.file("META-INF/container.xml").async("text");
+    const containerDoc = parser.parseFromString(containerXml, "application/xml");
+    opfRootPath = containerDoc.querySelector("rootfile").getAttribute("full-path");
+    opfContentDir = opfRootPath.includes('/') ? opfRootPath.substring(0, opfRootPath.lastIndexOf('/') + 1): '';
+
+    log(`OPF found at: ${opfRootPath}`);
+
+    // 2. Parse Metadata
+    const opfStr = await content.file(opfRootPath).async("text");
+    const opfDoc = parser.parseFromString(opfStr, "application/xml");
+
+    metaTitle.value = opfDoc.getElementsByTagNameNS(DC_NS, "title")[0]?.textContent || "";
+    metaAuthor.value = opfDoc.getElementsByTagNameNS(DC_NS, "creator")[0]?.textContent || "";
+    metaLang.value = opfDoc.getElementsByTagNameNS(DC_NS, "language")[0]?.textContent || "";
+    metaPub.value = opfDoc.getElementsByTagNameNS(DC_NS, "publisher")[0]?.textContent || "";
+
+    // Show Editor
+    editorArea.style.display = 'block';
+    log("Metadata loaded ready for editing.", "success");
+
+    } catch (err) {
+    console.error(err);
+    log(`Error loading EPUB: ${err.message}`, 'error');
+    }
+    });
+
+    // --- Step 2: Cover Image Handling ---
+    coverInput.addEventListener('change', (e) => {
+    newCoverFile = e.target.files[0];
+    if (newCoverFile) log(`Cover image staged: ${newCoverFile.name}`);
+    });
+
+    async function processCover(opfDoc, zip) {
+    if (!newCoverFile) return;
+
+    log("Processing new cover image...", "highlight");
+
+    const ext = newCoverFile.name.split('.').pop().toLowerCase();
+    const mime = newCoverFile.type || (ext === 'png' ? 'image/png': 'image/jpeg');
+    // Unique name to avoid cache/overlap issues
+    const newFileName = `cover_new_${Date.now()}.${ext}`;
+    const newFilePath = opfContentDir + newFileName;
+
+    // 1. Add file to Zip
+    zip.file(newFilePath, newCoverFile);
+
+    // 2. Update/Create Manifest Item
+    const manifest = opfDoc.getElementsByTagNameNS(OPF_NS, "manifest")[0];
+    let coverItem = null;
+
+    // Strategy A: Find by property="cover-image" (EPUB 3)
+    coverItem = Array.from(manifest.getElementsByTagNameNS(OPF_NS, "item"))
+    .find(i => i.getAttribute('properties') === 'cover-image');
+
+    // Strategy B: If not found, look for reference in <meta name="cover"> (EPUB 2)
+    if (!coverItem) {
+    const metaCover = opfDoc.querySelector('meta[name="cover"]');
+    if (metaCover) {
+    const coverId = metaCover.getAttribute('content');
+    coverItem = Array.from(manifest.getElementsByTagNameNS(OPF_NS, "item"))
+    .find(i => i.getAttribute('id') === coverId);
+    }
+    }
+
+    // Create if doesn't exist
+    if (!coverItem) {
+    coverItem = opfDoc.createElementNS(OPF_NS, "item");
+    coverItem.setAttribute("id", "cover-image-item");
+    coverItem.setAttribute("properties", "cover-image"); // EPUB 3
+    manifest.appendChild(coverItem);
+    log("Created new manifest item for cover.");
+    }
+
+    // Update attributes
+    coverItem.setAttribute("href", newFileName);
+    coverItem.setAttribute("media-type", mime);
+    if (!coverItem.getAttribute('properties')) coverItem.setAttribute('properties', 'cover-image');
+
+    const coverItemId = coverItem.getAttribute("id");
+
+    // 3. Update/Create EPUB 2 <meta name="cover">
+    // Many readers ONLY look at this!
+    let metaBlock = opfDoc.getElementsByTagNameNS(OPF_NS, "metadata")[0];
+    let metaCoverTag = metaBlock.querySelector('meta[name="cover"]');
+
+    if (!metaCoverTag) {
+    metaCoverTag = opfDoc.createElementNS(OPF_NS, "meta");
+    metaCoverTag.setAttribute("name", "cover");
+    metaBlock.appendChild(metaCoverTag);
+    }
+    metaCoverTag.setAttribute("content", coverItemId);
+
+    log(`Cover updated. Manifest ID: ${coverItemId} -> ${newFileName}`, "success");
+    }
+
+    async function processSpineOrder(opfDoc) {
+    if (!document.getElementById('coverFirstPage').checked) return;
+
+    const spine = opfDoc.getElementsByTagNameNS(OPF_NS, "spine")[0];
+    const manifest = opfDoc.getElementsByTagNameNS(OPF_NS, "manifest")[0];
+
+    // Try to identify the Cover HTML Wrapper (not the image itself)
+    // Usually has "cover" in ID or is first linear="no"
+    const items = Array.from(manifest.getElementsByTagNameNS(OPF_NS, "item"));
+    const coverHtmlItem = items.find(i => i.getAttribute("id").toLowerCase().includes("cover") && i.getAttribute("media-type") === "application/xhtml+xml");
+
+    if (coverHtmlItem) {
+    const id = coverHtmlItem.getAttribute("id");
+    const itemRef = Array.from(spine.getElementsByTagNameNS(OPF_NS, "itemref"))
+    .find(ref => ref.getAttribute("idref") === id);
+
+    if (itemRef && spine.firstChild !== itemRef) {
+    spine.insertBefore(itemRef, spine.firstChild);
+    log(`Moved cover HTML wrapper (${id}) to start of spine.`, "success");
+    }
+    }
+    }
+
+    // --- Step 3: Find & Replace Logic ---
+
+    // UI: Add a blank rule row
+    function addRuleRow(data = {find:'', replace:'', useRegex: false}) {
+    const div = document.createElement('div');
+    div.className = 'rule-row';
+    div.innerHTML = `
+    <div class="rule-inputs">
+    <input type="text" class="fr-find" placeholder="Find..." value="${data.find.replace(/"/g, '&quot;')}" />
+    <input type="text" class="fr-replace" placeholder="Replace with..." value="${data.replace.replace(/"/g, '&quot;')}" />
+    </div>
+    <div style="display:flex; flex-direction:column; gap:5px; align-items:center;">
+    <button class="remove-rule-btn" title="Remove Rule">&times;</button>
+    <div class="rule-options">
+    <input type="checkbox" class="fr-regex" ${data.useRegex ? 'checked': ''} title="Use Regex">
+    <span style="font-size:0.7rem; color:var(--color-text-secondary);">RegEx</span>
+    </div>
+    </div>
+    `;
+
+    div.querySelector('.remove-rule-btn').onclick = () => div.remove();
+    rulesContainer.appendChild(div);
+    }
+
+    // UI: Collect rules from DOM
+    function collectRules() {
+    const rows = document.querySelectorAll('.rule-row');
+    const rules = [];
+    rows.forEach(row => {
+    const findVal = row.querySelector('.fr-find').value;
+    const replaceVal = row.querySelector('.fr-replace').value;
+    const isRegex = row.querySelector('.fr-regex').checked;
+
+    if (findVal) {
+    rules.push({ find: findVal, replace: replaceVal, useRegex: isRegex });
+    }
+    });
+    return rules;
+    }
+
+    // Logic: Apply text replacement
+    function applyTextTransformation(text, rules) {
+    let result = text;
+    rules.forEach(rule => {
+    if (rule.useRegex) {
+    try {
+    // Create Regex with global flag
+    const regex = new RegExp(rule.find, 'g');
+    result = result.replace(regex, rule.replace);
+    } catch(e) {
+    console.error("Regex error", e);
+    }
+    } else {
+    // Global string replace
+    result = result.split(rule.find).join(rule.replace);
+    }
+    });
+    return result;
+    }
+
+    // Modal Event Listeners
+    openFrModalBtn.addEventListener('click', () => {
+    frModal.style.display = 'block';
+    if (rulesContainer.children.length === 0) addRuleRow(); // Add one default
+    });
+
+    closeFrModalBtn.addEventListener('click', () => {
+    frModal.style.display = 'none';
+    frRules = collectRules(); // Save state
+    });
+
+    addRuleBtn.addEventListener('click', () => addRuleRow());
+
+    saveRulesBtn.addEventListener('click', () => {
+    frRules = collectRules();
+    frModal.style.display = 'none';
+    log(`Saved ${frRules.length} Find/Replace rules. Ready to apply on generation.`, "highlight");
+    });
+
+    testRulesBtn.addEventListener('click', () => {
+    const input = document.getElementById('frSampleInput').value;
+    const currentRules = collectRules();
+    const output = applyTextTransformation(input, currentRules);
+    document.getElementById('frSampleOutput').textContent = output;
+    });
+
+    // Close modal if clicked outside
+    window.onclick = function(event) {
+    if (event.target == frModal) {
+    frModal.style.display = "none";
+    frRules = collectRules();
+    }
+    }
+
+    async function applyFindReplaceToFiles(zip) {
+    if (frRules.length === 0) return;
+
+    log(`Starting Bulk Find & Replace (${frRules.length} rules)...`, "highlight");
+    let count = 0;
+
+    for (const fileName in zip.files) {
+    // Only target XHTML/HTML files
+    if (fileName.match(/\.(xhtml|html|htm|xml)$/i) && !fileName.includes('container.xml')) {
+    const file = zip.file(fileName);
+    let text = await file.async("text");
+    const originalLength = text.length;
+
+    // We perform replacement on the RAW string to catch everything
+    // Note: This is risky for complex regex matching HTML tags, but standard for "Replace All"
+    const newText = applyTextTransformation(text, frRules);
+
+    if (newText.length !== originalLength || newText !== text) {
+    zip.file(fileName, newText);
+    count++;
+    // Log first few changes only to avoid spam
+    if (count < 5) log(`Modified: ${fileName}`);
+    }
+    }
+    }
+    log(`Find & Replace applied to ${count} files.`, "success");
+    }
+
+
+    // --- Step 4: Final Processing & TOC ---
+
+    async function generateTOC(opfDoc, zip, selector) {
+    const spine = opfDoc.getElementsByTagNameNS(OPF_NS, "spine")[0];
+    const manifest = opfDoc.getElementsByTagNameNS(OPF_NS, "manifest")[0];
+
+    // Map ID -> Href
+    const manifestMap = {};
+    Array.from(manifest.getElementsByTagNameNS(OPF_NS, "item")).forEach(i => {
+    manifestMap[i.getAttribute("id")] = i.getAttribute("href");
+    });
+
+    const tocPoints = [];
+    let playOrder = 1;
+
+    const spineItems = Array.from(spine.getElementsByTagNameNS(OPF_NS, "itemref"));
+
+    for (let itemRef of spineItems) {
+    if (itemRef.getAttribute('linear') === 'no') continue;
+
+    const href = manifestMap[itemRef.getAttribute("idref")];
+    if (!href) continue;
+
+    const fullPath = opfContentDir + href;
+    const file = zip.file(fullPath);
+    if (!file) continue;
+
+    const htmlContent = await file.async("text");
+    const doc = parser.parseFromString(htmlContent, "application/xhtml+xml"); // strict parsing
+
+    // Fix Namespace if missing (common parser issue)
+    if (!doc.documentElement.getAttribute("xmlns")) {
+    doc.documentElement.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+    }
+
+    const headings = doc.querySelectorAll(selector);
+    let modified = false;
+
+    headings.forEach(h => {
+    const text = h.textContent.trim();
+    if (text) {
+    let anchor = h.getAttribute("id");
+    if (!anchor) {
+    anchor = `toc_g_${playOrder}`;
+    h.setAttribute("id", anchor);
+    modified = true;
+    }
+    tocPoints.push({ label: text, src: `${href}#${anchor}`, order: playOrder++ });
+    }
+    });
+
+    if (modified) {
+    zip.file(fullPath, serializer.serializeToString(doc));
+    }
+    }
+    return tocPoints;
+    }
+
+    // TOC Preview Handler
+    previewTocBtn.addEventListener('click', async () => {
+    if (!currentZip) return;
+
+    const selector = tocSelectorInput.value;
+    // Clone zip for preview to avoid modifying IDs yet
+    // For simplicity, we just run the extraction on currentZip but don't save
+    // Ideally we parse without modifying, but for preview text extraction is enough
+
+    log("Scanning for chapters...", "info");
+    // Quick scan without ID injection
+    // Re-parsing OPF
+    const opfStr = await currentZip.file(opfRootPath).async("text");
+    const opfDoc = parser.parseFromString(opfStr, "application/xml");
+
+    const tocPoints = await generateTOC(opfDoc, currentZip, selector);
+
+    const list = document.getElementById('previewList');
+    list.innerHTML = '';
+    if (tocPoints.length === 0) {
+    list.innerHTML = '<li style="color:var(--color-error)">No headings found with current selector.</li>';
+    } else {
+    tocPoints.forEach(p => {
+    const li = document.createElement('li');
+    li.textContent = `${p.label}`;
+    li.style.borderBottom = '1px solid #333';
+    li.style.padding = '4px 0';
+    list.appendChild(li);
+    });
+    }
+    document.getElementById('tocPreviewOutput').style.display = 'block';
+    });
+
+    // Main Process Handler
+    processBtn.addEventListener('click', async () => {
+    if (!currentZip) return;
+
+    processBtn.disabled = true;
+    processBtn.innerText = "Processing...";
+    log("Starting EPUB regeneration...", "highlight");
+
+    try {
+    // Reload OPF for fresh modifications
+    let opfContent = await currentZip.file(opfRootPath).async("text");
+    let opfDoc = parser.parseFromString(opfContent, "application/xml");
+
+    // 1. Update Metadata
+    const updateMeta = (tag, val) => {
+    let el = opfDoc.getElementsByTagNameNS(DC_NS, tag)[0];
+    if (!el) {
+    el = opfDoc.createElementNS(DC_NS, "dc:"+tag);
+    opfDoc.getElementsByTagNameNS(OPF_NS, "metadata")[0].appendChild(el);
+    }
+    el.textContent = val;
+    };
+    updateMeta("title", metaTitle.value);
+    updateMeta("creator", metaAuthor.value);
+    updateMeta("language", metaLang.value);
+    updateMeta("publisher", metaPub.value);
+
+    // 2. Cover Fix
+    await processCover(opfDoc, currentZip);
+    await processSpineOrder(opfDoc);
+
+    // 3. Find & Replace (Bulk)
+    // Note: We do this BEFORE TOC generation in case headers change
+    if (frRules.length > 0) {
+    await applyFindReplaceToFiles(currentZip);
+    }
+
+    // 4. Generate TOC
+    if (generateTOCCheckbox.checked) {
+    const selector = tocSelectorInput.value;
+    const tocPoints = await generateTOC(opfDoc, currentZip, selector);
+
+    // Create NCX
+    const ncxContent = `<?xml version="1.0" encoding="UTF-8"?>
+    <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+    <head>
+    <meta name="dtb:uid" content="urn:uuid:generated"/>
+    <meta name="dtb:depth" content="1"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+    </head>
+    <docTitle><text>${metaTitle.value}</text></docTitle>
+    <navMap>
+    ${tocPoints.map(p => `
+    <navPoint id="navPoint-${p.order}" playOrder="${p.order}">
+    <navLabel><text>${p.label.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text></navLabel>
+    <content src="${p.src}"/>
+    </navPoint>`).join('\n')}
+    </navMap>
+    </ncx>`;
+
+    const ncxFilename = "toc.ncx";
+    currentZip.file(opfContentDir + ncxFilename, ncxContent);
+
+    // Update OPF Manifest for NCX
+    const manifest = opfDoc.getElementsByTagNameNS(OPF_NS, "manifest")[0];
+    let ncxItem = Array.from(manifest.getElementsByTagName("item")).find(i => i.getAttribute("media-type") === "application/x-dtbncx+xml");
+    if (!ncxItem) {
+    ncxItem = opfDoc.createElementNS(OPF_NS, "item");
+    ncxItem.setAttribute("id", "ncx");
+    ncxItem.setAttribute("media-type", "application/x-dtbncx+xml");
+    manifest.appendChild(ncxItem);
+    }
+    ncxItem.setAttribute("href", ncxFilename);
+
+    // Update OPF Spine toc reference
+    opfDoc.getElementsByTagNameNS(OPF_NS, "spine")[0].setAttribute("toc", ncxItem.getAttribute("id"));
+    log(`TOC generated with ${tocPoints.length} entries.`, "success");
+    }
+
+    // 5. Save OPF
+    currentZip.file(opfRootPath, serializer.serializeToString(opfDoc));
+
+    // 6. Download
+    const blob = await currentZip.generateAsync({ type: "blob", mimeType: "application/epub+zip" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `edited_${currentFile.name}`;
+    link.click();
+
+    log("Process Complete. Downloading...", "success");
+
+    } catch (e) {
+    console.error(e);
+    log("Error during processing: " + e.message, "error");
+    } finally {
+    processBtn.disabled = false;
+    processBtn.innerText = "Generate & Download EPUB";
+    }
+    });
+
+  </script>
+</body>
+</html>
